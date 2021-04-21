@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/celerway/diamonds/dbos"
 	"github.com/celerway/diamonds/dtos"
 	"io"
 	"net/http"
@@ -16,7 +15,7 @@ type Hello struct {
 
 func (app App) HomeHandler(w http.ResponseWriter, _ *http.Request) {
 
-	resp, err := app.Repo.Ping()
+	resp, err := app.Service.Ping()
 	h := Hello{resp}
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -35,6 +34,8 @@ func (app App) ReviewHandler(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Invalid request payload: %s", err))
 		return
 	}
+
+	// The somewhat ugly way of handling an error in a defer statement:
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
@@ -42,14 +43,7 @@ func (app App) ReviewHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}(r.Body)
 
-	reviewDb := dbos.Review{
-		Reviewer: review.Reviewer,
-		Repo:     review.Repo,
-		Pr:       review.Pr,
-		Badge:    review.Badge,
-	}
-
-	err := app.Repo.RegisterReview(reviewDb)
+	err := app.Service.RegisterReview(review)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -60,9 +54,8 @@ func (app App) ReviewHandler(w http.ResponseWriter, r *http.Request) {
 // ReviewsHandler
 // Responds with the reviews given
 func (app App) ReviewsHandler(w http.ResponseWriter, r *http.Request) {
-	reviews := make(dtos.ReviewStatMap, 0) // the response map.
-	var dbReviews dbos.Reviews
 	var err error
+	reviews := make(dtos.ReviewStatMap, 0) // the response map.
 
 	v := r.URL.Query()
 	period := v.Get("period")
@@ -71,33 +64,11 @@ func (app App) ReviewsHandler(w http.ResponseWriter, r *http.Request) {
 		period = "day"
 	}
 
-	switch period {
-	case "week":
-		dbReviews, err = app.Repo.GetStatsForWeek(time.Now().UTC())
-	case "day":
-		dbReviews, err = app.Repo.GetStatsForDay(time.Now().UTC())
-	default:
-		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Unknown period specification: %s", period))
-	}
+	reviews, err = app.Service.GetStats(period, time.Now())
 
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
-	}
-	for _, review := range dbReviews {
-		// Get the current reviewer from the map.
-		curReviewer, ok := reviews[review.Reviewer]
-		if !ok { // if it doesn't exist, make one.
-			curReviewer = dtos.ReviewerStat{}
-			curReviewer.Prs = make([]string, 0)
-		}
-		// Add the badge
-		curBadges := curReviewer.Badges + review.Badge
-		curReviewer.Badges = curBadges
-		// Add the PR
-		curReviewer.Prs = append(curReviewer.Prs, fmt.Sprintf("%s/pulls/%d", review.Repo, review.Pr))
-		// Write it back to the map.
-		reviews[review.Reviewer] = curReviewer
 	}
 	respondWithJSON(w, http.StatusOK, reviews)
 }

@@ -4,6 +4,7 @@ import (
 	"github.com/celerway/diamonds/dbos"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
+	log "github.com/sirupsen/logrus"
 	"os"
 	"time"
 )
@@ -12,14 +13,15 @@ type Repository struct {
 	db *sqlx.DB
 }
 
-func Initialize() *Repository {
+func Initialize() Repository {
 	r := Repository{}
 	db, err := sqlx.Open("mysql", os.Getenv("DSN"))
 	if err != nil {
 		panic(err)
 	}
 	r.db = db
-	return &r
+	log.Info("Repo layer initialized")
+	return r
 }
 
 func (repo Repository) Ping() (string, error) {

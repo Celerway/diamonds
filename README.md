@@ -24,4 +24,7 @@ SLACK_URL - Your SLACK URL endpoint. So we can talk to Slack.
  – See go.mod for a complete list.
 
 ## Todo
+ - Slack integrations and docs.
  - There are no tests as of now.
+ - No helm 
+ - No Dockerfile
