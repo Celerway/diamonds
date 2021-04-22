@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+	log.SetLevel(log.TraceLevel)
 	err := godotenv.Load()
 	if err != nil {
 		log.Infof("Error loading .env file, assuming production: %s", err.Error())
@@ -20,7 +21,6 @@ func main() {
 	mySlapp := slapp.Initialize(myService)
 	myApi := api.Initialize(myService)
 	// glue the slack app to the scheduler:
-	sched := scheduler.Initialize(myService, mySlapp)
-	sched.Worker() // spins off a goroutine
-	myApi.Run()    // starts the API. Blocks.
+	scheduler.Initialize(myService, mySlapp)
+	myApi.Run() // starts the API. Blocks.
 }

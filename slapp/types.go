@@ -12,6 +12,5 @@ type SlackMessage struct {
 type Slapp struct { // Slack App
 	client         *slack.Client
 	Service        service.DiamondService
-	SlackChannel   string
 	SlackChannelId string
 }

@@ -9,9 +9,11 @@ type Review struct {
 	Badge    string `json:"Badge"`
 }
 
+type PrMap map[int]string // Map with pr --> URL.
+
 type ReviewerStat struct {
 	// Reviewer string // Not needed. It is the key.
-	Prs    []string // Contains URLs to all the Prs
+	Prs    PrMap
 	Badges string
 }
 

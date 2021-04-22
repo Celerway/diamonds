@@ -61,13 +61,13 @@ func (s DiamondService) GetStats(period string, when time.Time) (dtos.ReviewStat
 		curReviewer, ok := reviews[review.Reviewer]
 		if !ok { // if it doesn't exist, make one.
 			curReviewer = dtos.ReviewerStat{}
-			curReviewer.Prs = make([]string, 0)
+			curReviewer.Prs = make(dtos.PrMap, 0)
 		}
 		// Add the badge
 		curBadges := curReviewer.Badges + review.Badge
 		curReviewer.Badges = curBadges
 		// Add the PR
-		curReviewer.Prs = append(curReviewer.Prs, fmt.Sprintf("%s/pulls/%d", review.Repo, review.Pr))
+		curReviewer.Prs[review.Pr] = fmt.Sprintf("%s/pulls/%d", review.Repo, review.Pr)
 		// Write it back to the map.
 		reviews[review.Reviewer] = curReviewer
 	}
