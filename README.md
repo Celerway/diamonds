@@ -23,7 +23,7 @@ In order to give "bob" a 🦆 for his wonderful work on reviewing duck typing yo
 httpie).
 
 ```
- http -v  'localhost:4210/v1/review' APIKey:mysecretkey Reviewer=bob Repo=github.com/celerway/diamonds 'Pr:=5' Badge=🦆
+ http -v  'localhost:4210/v1/review' APIKey:mysecretkey Reviewer=bob Repo=https://github.com/celerway/diamonds 'Pr:=5' Badge=🦆
 ```
 
 This will create the following POST body:
@@ -32,7 +32,7 @@ This will create the following POST body:
 {
     "Badge": "🦆",
     "Pr": 15,
-    "Repo": "github.com/celerway/diamonds",
+    "Repo": "https://github.com/celerway/diamonds",
     "Reviewer": "bob"
 }
 ```
@@ -49,7 +49,8 @@ This will create the following POST body:
 - No helm
 - Listens to :4210 (hard coded)  
 - Require a Content-type header with application/json
-- The scheduler is hardcoded with consts.  
+- The scheduler is hardcoded with consts.
+- Tied to Github URLs  
 - Probably a lot more
 
-PRs are welcome. 
+PRs are welcome. I don't know how much time I can afford spending on this.
