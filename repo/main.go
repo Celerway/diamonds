@@ -13,9 +13,17 @@ type Repository struct {
 	db *sqlx.DB
 }
 
+func getDsn() string {
+	dsn, ok := os.LookupEnv("DSN")
+	if !ok {
+		log.Fatal("Missing DSN in environment")
+	}
+	return dsn
+}
+
 func Initialize() Repository {
 	r := Repository{}
-	db, err := sqlx.Open("mysql", os.Getenv("DSN"))
+	db, err := sqlx.Open("mysql", getDsn())
 	if err != nil {
 		panic(err)
 	}
