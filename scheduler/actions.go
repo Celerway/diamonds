@@ -1,7 +1,6 @@
 package scheduler
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/celerway/diamonds/dtos"
 	log "github.com/sirupsen/logrus"
@@ -37,12 +36,18 @@ func (d DiamondSched) dailyReport() {
 }
 
 func (d DiamondSched) weeklyReport() {
-	daily, err := d.Service.GetStats("week", time.Now().UTC())
+	weekly, err := d.Service.GetStats("week", time.Now().UTC())
 	if err != nil {
 		log.Errorf("[sched] GetStats(): %v", err)
 	}
-	dailyJson, _ := json.Marshal(daily)
-	d.Slapp.Say(string(dailyJson))
+	var payload []string
+	payload = append(payload, "Rewards awarded for the current week")
+	for user, review := range weekly {
+		payload = append(payload,
+			fmt.Sprintf("%s: %s %s", user, review.Badges, makePrList(review.Prs)),
+		)
+	}
+	d.Slapp.Say(strings.Join(payload, "\n"))
 	log.Info("[sched] Weekly report delivered.")
 	time.Sleep(time.Second) // Sleep a second for good measure.
 	d.logNextRun()
