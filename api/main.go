@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"github.com/celerway/diamonds/service"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
@@ -26,7 +27,8 @@ func Initialize(service service.DiamondService) App {
 func (app App) Run() {
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = ":4210"
+		port = "4210"
 	}
+	port = fmt.Sprintf(":%s", port)
 	log.Fatal(http.ListenAndServe(port, app.Router))
 }
