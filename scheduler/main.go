@@ -8,8 +8,8 @@ import (
 	"time"
 )
 
-const DAILY = "16:00"
-const WEEKLY = "23:50"
+const DAILY = "16:00:00"
+const WEEKLY = "23:50:00"
 
 type DiamondSched struct {
 	Service  service.DiamondService

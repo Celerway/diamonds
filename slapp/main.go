@@ -46,7 +46,7 @@ func Initialize(service service.DiamondService) Slapp {
 	if err != nil {
 		log.Fatalf("[slack] Could not join conversation: %v", err)
 	}
-	s.Say("Hello! I have 💎")
+	// s.Say("Hello! I have 💎")
 	log.Info("Slack app initialized")
 	return s
 }

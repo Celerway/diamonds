@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"net/http"
+	"os"
 )
 
 type App struct {
@@ -23,5 +24,9 @@ func Initialize(service service.DiamondService) App {
 }
 
 func (app App) Run() {
-	log.Fatal(http.ListenAndServe(":4210", app.Router))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = ":4210"
+	}
+	log.Fatal(http.ListenAndServe(port, app.Router))
 }

@@ -28,10 +28,13 @@ func (d DiamondSched) dailyReport() {
 			fmt.Sprintf("%s: %s %s", user, review.Badges, makePrList(review.Prs)),
 		)
 	}
-
-	d.Slapp.Say(strings.Join(payload, "\n"))
-	log.Info("[sched] Daily report delivered.")
-	time.Sleep(time.Second) // Sleep a second for good measure.
+	if len(payload) > 0 {
+		d.Slapp.Say(strings.Join(payload, "\n"))
+		log.Info("[sched] Daily report delivered.")
+	} else {
+		log.Info("Nothing to report.")
+	}
+	time.Sleep(time.Second * 3) // Sleep a second for good measure.
 	d.logNextRun()
 }
 
@@ -49,6 +52,6 @@ func (d DiamondSched) weeklyReport() {
 	}
 	d.Slapp.Say(strings.Join(payload, "\n"))
 	log.Info("[sched] Weekly report delivered.")
-	time.Sleep(time.Second) // Sleep a second for good measure.
+	time.Sleep(time.Second * 3) // Sleep a second for good measure.
 	d.logNextRun()
 }
